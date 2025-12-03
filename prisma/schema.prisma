@@ -1,0 +1,143 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ESTUDIANTE
+  ASESOR
+}
+
+enum EstadoTesis {
+  EN_PROGRESO
+  FINALIZADA
+  SUSPENDIDA
+}
+
+enum TipoActividad {
+  ACTUALIZACION_PORCENTAJE
+  ACTUALIZACION_CAPITULO
+  COMPLETADO_HITO
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  nombre    String
+  rol       Rol
+  programa  String
+  cohorte   String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  tesisEstudiante Tesis?       @relation("EstudianteTesis")
+  tesisAsesoradas Tesis[]      @relation("AsesorTesis")
+  comentarios     Comentario[]
+
+  @@index([email])
+}
+
+model Tesis {
+  id                 String      @id @default(uuid())
+  titulo             String
+  estudianteId       String      @unique
+  asesorId           String
+  porcentajeGeneral  Float       @default(0)
+  plantillaIndice    Json // Estructura de capítulos
+  visibilidadPublica Boolean     @default(true)
+  estado             EstadoTesis @default(EN_PROGRESO)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  // Relaciones
+  estudiante  User                  @relation("EstudianteTesis", fields: [estudianteId], references: [id])
+  asesor      User                  @relation("AsesorTesis", fields: [asesorId], references: [id])
+  capitulos   Capitulo[]
+  hitos       Hito[]
+  actividades ActividadEstudiante[]
+
+  @@index([estudianteId])
+  @@index([asesorId])
+}
+
+model Capitulo {
+  id                   String    @id @default(uuid())
+  tesisId              String
+  numeroCapitulo       Int
+  titulo               String
+  porcentajeCompletado Float     @default(0)
+  aprobadoPorAsesor    Boolean   @default(false)
+  fechaAprobacion      DateTime?
+  orden                Int
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relaciones
+  tesis       Tesis        @relation(fields: [tesisId], references: [id])
+  comentarios Comentario[]
+  hitos       Hito[]
+
+  @@index([tesisId])
+}
+
+model Comentario {
+  id         String   @id @default(uuid())
+  capituloId String
+  autorId    String
+  contenido  String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relaciones
+  capitulo Capitulo @relation(fields: [capituloId], references: [id])
+  autor    User     @relation(fields: [autorId], references: [id])
+
+  @@index([capituloId])
+}
+
+model Hito {
+  id              String    @id @default(uuid())
+  tesisId         String
+  capituloId      String?
+  titulo          String
+  descripcion     String?   @db.Text
+  fechaLimite     DateTime
+  completado      Boolean   @default(false)
+  fechaCompletado DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relaciones
+  tesis    Tesis     @relation(fields: [tesisId], references: [id])
+  capitulo Capitulo? @relation(fields: [capituloId], references: [id])
+
+  @@index([tesisId])
+}
+
+model ActividadEstudiante {
+  id            String        @id @default(uuid())
+  tesisId       String
+  tipo          TipoActividad
+  descripcion   String
+  valorAnterior Json?
+  valorNuevo    Json?
+  timestamp     DateTime      @default(now())
+
+  // Relaciones
+  tesis Tesis @relation(fields: [tesisId], references: [id])
+
+  @@index([tesisId])
+}
