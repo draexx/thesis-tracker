@@ -1,6 +1,6 @@
 "use client"
 
-import { LogOut, User } from "lucide-react"
+import { LogOut, User, Trophy } from "lucide-react"
 import { signOut } from "next-auth/react"
 import {
     DropdownMenu,
@@ -60,6 +60,19 @@ export function Navbar({ userName, userEmail, userRole }: NavbarProps) {
                                     </p>
                                 </div>
                             </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <a href="/ranking" className="cursor-pointer">
+                                    <Trophy className="mr-2 h-4 w-4" />
+                                    <span>Ver Ranking</span>
+                                </a>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <a href="/perfil" className="cursor-pointer">
+                                    <User className="mr-2 h-4 w-4" />
+                                    <span>Mi Perfil</span>
+                                </a>
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />
