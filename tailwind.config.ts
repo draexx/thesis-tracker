@@ -52,6 +52,18 @@ const config = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
+                // Custom Theme Colors
+                formal: {
+                    primary: '#1e40af',  // azul profesional
+                    secondary: '#64748b',
+                    accent: '#0ea5e9',
+                },
+                game: {
+                    primary: '#8b5cf6',  // púrpura vibrante
+                    secondary: '#ec4899',
+                    accent: '#f59e0b',
+                    success: '#10b981',
+                }
             },
             borderRadius: {
                 lg: "var(--radius)",
@@ -67,10 +79,25 @@ const config = {
                     from: { height: "var(--radix-accordion-content-height)" },
                     to: { height: "0" },
                 },
+                "pulse-slow": {
+                    "0%, 100%": { opacity: "1" },
+                    "50%": { opacity: "0.6" },
+                },
+                "bounce-subtle": {
+                    "0%, 100%": { transform: "translateY(-5%)" },
+                    "50%": { transform: "translateY(0)" },
+                },
+                "slide-up": {
+                    "0%": { transform: "translateY(100%)", opacity: "0" },
+                    "100%": { transform: "translateY(0)", opacity: "1" },
+                }
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
+                "pulse-slow": "pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                "bounce-subtle": "bounce-subtle 2s infinite",
+                "slide-up": "slide-up 0.3s ease-out",
             },
         },
     },

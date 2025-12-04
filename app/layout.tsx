@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   description: "Plataforma de seguimiento de tesis",
 };
 
+import { ThemeProvider } from "@/lib/context/ThemeContext"
+
+// ... imports
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -18,8 +22,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        {children}
-        <Toaster />
+        <ThemeProvider>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

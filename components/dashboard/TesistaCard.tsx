@@ -4,12 +4,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { getAlertEmoji, getAlertBadgeVariant, getAlertText, type AlertLevel } from "@/lib/utils/alertas"
 import { Calendar, Eye } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { BarraProgresoTematica } from "@/components/dashboard/BarraProgresoTematica"
 
 interface TesistaCardProps {
     tesista: {
@@ -90,7 +90,7 @@ export function TesistaCard({ tesista, onVerDetalles }: TesistaCardProps) {
                         <span className="text-muted-foreground">Progreso</span>
                         <span className="font-medium">{tesista.porcentajeGeneral}%</span>
                     </div>
-                    <Progress value={tesista.porcentajeGeneral} className="h-2" />
+                    <BarraProgresoTematica porcentaje={tesista.porcentajeGeneral} />
                 </div>
 
                 {tesista.proximoHito && (
