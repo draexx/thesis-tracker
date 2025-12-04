@@ -1,71 +1,101 @@
 import { NextResponse } from "next/server"
-import { z } from "zod"
-import bcrypt from "bcryptjs"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
-
-const registerSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
-    nombre: z.string().min(2),
-    rol: z.enum(["ESTUDIANTE", "ASESOR"]),
-    programa: z.string().min(2),
-    cohorte: z.string().min(2),
-})
+import { hash } from "bcryptjs"
+import { prisma } from "@/lib/prisma/client"
+import { registroSchema } from "@/lib/validations/auth"
+import * as z from "zod"
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const result = registerSchema.safeParse(body)
+        const validated = registroSchema.parse(body)
 
-        if (!result.success) {
-            return NextResponse.json(
-                { message: "Invalid input", errors: result.error.flatten() },
-                { status: 400 }
-            )
-        }
-
-        const { email, password, nombre, rol, programa, cohorte } = result.data
-
-        // Check if user exists
+        // Verificar si el email ya existe
         const existingUser = await prisma.user.findUnique({
-            where: { email },
+            where: { email: validated.email },
         })
 
         if (existingUser) {
             return NextResponse.json(
-                { message: "User already exists" },
-                { status: 409 }
+                { error: "Este email ya está registrado" },
+                { status: 400 }
             )
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10)
+        // Hashear contraseña
+        const hashedPassword = await hash(validated.password, 12)
 
-        // Create user
+        // Crear usuario
         const user = await prisma.user.create({
             data: {
-                email,
+                email: validated.email,
                 password: hashedPassword,
-                nombre,
-                rol,
-                programa,
-                cohorte,
+                nombre: validated.nombre,
+                rol: validated.rol,
+                programa: validated.programa,
+                cohorte: validated.cohorte,
             },
         })
 
-        // Remove password from response
-        const { password: _, ...userWithoutPassword } = user
+        // Si es estudiante y proporcionó info de tesis, crearla
+        if (validated.rol === "ESTUDIANTE" && validated.tituloTesis) {
+            // Buscar asesor por nombre si se proporcionó
+            let asesorId = user.id // Por defecto, asignar al mismo usuario temporalmente
+
+            if (validated.nombreAsesor) {
+                const asesor = await prisma.user.findFirst({
+                    where: {
+                        nombre: {
+                            contains: validated.nombreAsesor,
+                            mode: "insensitive",
+                        },
+                        rol: "ASESOR",
+                    },
+                })
+                if (asesor) {
+                    asesorId = asesor.id
+                }
+            }
+
+            await prisma.tesis.create({
+                data: {
+                    titulo: validated.tituloTesis,
+                    estudianteId: user.id,
+                    asesorId: asesorId,
+                    porcentajeGeneral: 0,
+                    visibilidadPublica: validated.visibilidadPublica ?? true,
+                    estado: "EN_PROGRESO",
+                    plantillaIndice: {
+                        capitulos: [
+                            { numero: 1, titulo: "Introducción" },
+                            { numero: 2, titulo: "Marco Teórico" },
+                            { numero: 3, titulo: "Metodología" },
+                            { numero: 4, titulo: "Resultados" },
+                            { numero: 5, titulo: "Conclusiones" },
+                        ],
+                    },
+                },
+            })
+        }
 
         return NextResponse.json(
-            { message: "User created successfully", user: userWithoutPassword },
+            {
+                message: "Usuario registrado exitosamente",
+                userId: user.id,
+                hasThesis: validated.rol === "ESTUDIANTE" && !!validated.tituloTesis,
+            },
             { status: 201 }
         )
     } catch (error) {
-        console.error("Registration error:", error)
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                { error: "Datos inválidos", details: error.errors },
+                { status: 400 }
+            )
+        }
+
+        console.error("Error en registro:", error)
         return NextResponse.json(
-            { message: "Internal server error" },
+            { error: "Error al registrar usuario" },
             { status: 500 }
         )
     }
