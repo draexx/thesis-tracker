@@ -1,8 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Search, List, Trophy, Sparkles } from "lucide-react"
+import { Search, List, Trophy, Sparkles, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -46,6 +48,7 @@ interface RankingData {
 
 export default function RankingPublico() {
     const [currentUserId, setCurrentUserId] = useState<string | undefined>()
+    const [userRole, setUserRole] = useState<string | undefined>()
     const [data, setData] = useState<RankingData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -68,19 +71,20 @@ export default function RankingPublico() {
             setModoGamificacion(saved === "true")
         }
 
-        // Try to get current user ID from session storage or make API call
-        const getUserId = async () => {
+        // Try to get current user ID and role from session
+        const getUserInfo = async () => {
             try {
                 const response = await fetch("/api/auth/session")
                 const session = await response.json()
                 if (session?.user?.id) {
                     setCurrentUserId(session.user.id)
+                    setUserRole(session.user.rol)
                 }
             } catch (error) {
                 console.error("Error fetching session:", error)
             }
         }
-        getUserId()
+        getUserInfo()
     }, [])
 
     // Save gamification preference to localStorage
@@ -167,6 +171,25 @@ export default function RankingPublico() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
             <div className="container mx-auto space-y-6">
+                {/* Back button */}
+                {userRole && (
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                    >
+                        <Button
+                            variant="ghost"
+                            asChild
+                            className="mb-4"
+                        >
+                            <Link href={userRole === "ESTUDIANTE" ? "/dashboard/estudiante" : "/dashboard/asesor"}>
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Volver al Dashboard
+                            </Link>
+                        </Button>
+                    </motion.div>
+                )}
+
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
