@@ -77,7 +77,7 @@ export function GestionarCapitulosDialog({
         reset,
         setValue,
     } = useForm<ChapterFormData>({
-        resolver: zodResolver(chapterSchema),
+        resolver: zodResolver(chapterSchema) as any,
     })
 
     const onAdd = async (data: ChapterFormData) => {
