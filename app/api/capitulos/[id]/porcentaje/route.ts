@@ -69,6 +69,11 @@ export async function PATCH(
             }),
         ])
 
+
+
+        // Recalculate general progress asynchronously
+        await updateTesisProgress(capitulo.tesis.id)
+
         return NextResponse.json(updatedCapitulo)
     } catch (error) {
         console.error("Error updating chapter percentage:", error)
@@ -76,5 +81,29 @@ export async function PATCH(
             { message: "Internal server error" },
             { status: 500 }
         )
+    }
+}
+
+async function updateTesisProgress(tesisId: string) {
+    try {
+        const capitulos = await prisma.capitulo.findMany({
+            where: { tesisId },
+            select: { porcentajeCompletado: true },
+        })
+
+        if (capitulos.length === 0) return
+
+        const totalPorcentaje = capitulos.reduce(
+            (acc, curr) => acc + curr.porcentajeCompletado,
+            0
+        )
+        const promedio = Math.round(totalPorcentaje / capitulos.length)
+
+        await prisma.tesis.update({
+            where: { id: tesisId },
+            data: { porcentajeGeneral: promedio },
+        })
+    } catch (error) {
+        console.error("Error recalculating thesis progress:", error)
     }
 }

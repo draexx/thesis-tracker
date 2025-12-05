@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast"
 import { InformeActividad } from "@/components/dashboard/InformeActividad"
 import { TimelineActividad } from "@/components/dashboard/TimelineActividad"
 import { Logros } from "@/components/dashboard/Logros"
+import { GestionarCapitulosDialog } from "@/components/dashboard/GestionarCapitulosDialog"
 
 interface TesisDetalleProps {
     tesisId: string | null
@@ -50,6 +51,7 @@ export function TesisDetalle({ tesisId, open, onOpenChange }: TesisDetalleProps)
     // Estado para ajuste de porcentaje
     const [nuevoPorcentaje, setNuevoPorcentaje] = useState<number>(0)
     const [justificacionPorcentaje, setJustificacionPorcentaje] = useState("")
+    const [gestionCapitulosOpen, setGestionCapitulosOpen] = useState(false)
 
     const tesis = data?.tesis
 
@@ -227,87 +229,103 @@ export function TesisDetalle({ tesisId, open, onOpenChange }: TesisDetalleProps)
                         <TabsTrigger value="ajustes">Ajustes</TabsTrigger>
                     </TabsList>
 
+
                     <ScrollArea className="flex-1 p-4">
                         <TabsContent value="capitulos" className="space-y-4 mt-0">
-                            {tesis.capitulos.map((capitulo: any) => (
-                                <Card key={capitulo.id}>
-                                    <CardHeader className="pb-2">
-                                        <div className="flex items-center justify-between">
-                                            <CardTitle className="text-lg">
-                                                Capítulo {capitulo.numeroCapitulo}: {capitulo.titulo}
-                                            </CardTitle>
-                                            {capitulo.aprobadoPorAsesor ? (
-                                                <Badge className="bg-green-500 hover:bg-green-600">
-                                                    <CheckCircle className="w-3 h-3 mr-1" /> Aprobado
-                                                </Badge>
-                                            ) : (
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => handleAprobarCapitulo(capitulo.id)}
-                                                >
-                                                    Aprobar
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between text-sm text-muted-foreground">
-                                                <span>Progreso: {capitulo.porcentajeCompletado}%</span>
-                                                <span>Última mod: {format(new Date(capitulo.updatedAt), "dd/MM/yyyy")}</span>
-                                            </div>
-
-                                            {/* Sección de Comentarios */}
-                                            <div className="bg-muted/50 p-4 rounded-lg space-y-3">
-                                                <h4 className="font-medium text-sm flex items-center gap-2">
-                                                    <MessageSquare className="w-4 h-4" /> Comentarios
-                                                </h4>
-                                                {capitulo.comentarios.length > 0 ? (
-                                                    <div className="space-y-3">
-                                                        {capitulo.comentarios.map((comentario: any) => (
-                                                            <div key={comentario.id} className="bg-background p-3 rounded shadow-sm text-sm">
-                                                                <div className="flex justify-between mb-1">
-                                                                    <span className="font-semibold">{comentario.autor.nombre}</span>
-                                                                    <span className="text-xs text-muted-foreground">
-                                                                        {format(new Date(comentario.createdAt), "dd/MM HH:mm")}
-                                                                    </span>
-                                                                </div>
-                                                                <p>{comentario.contenido}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                            <div className="flex justify-end mb-4">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setGestionCapitulosOpen(true)}
+                                >
+                                    <MessageSquare className="w-4 h-4 mr-2" />
+                                    Gestionar Estructura
+                                </Button>
+                            </div>
+                            {tesis.capitulos.length === 0 ? (
+                                <p className="text-center text-muted-foreground py-8">
+                                    No hay capítulos definidos. ¡Gestiona la estructura para agregar uno!
+                                </p>
+                            ) : (
+                                tesis.capitulos.map((capitulo: any) => (
+                                    <Card key={capitulo.id}>
+                                        <CardHeader className="pb-2">
+                                            <div className="flex items-center justify-between">
+                                                <CardTitle className="text-lg">
+                                                    Capítulo {capitulo.numeroCapitulo}: {capitulo.titulo}
+                                                </CardTitle>
+                                                {capitulo.aprobadoPorAsesor ? (
+                                                    <Badge className="bg-green-500 hover:bg-green-600">
+                                                        <CheckCircle className="w-3 h-3 mr-1" /> Aprobado
+                                                    </Badge>
                                                 ) : (
-                                                    <p className="text-sm text-muted-foreground italic">No hay comentarios aún.</p>
-                                                )}
-
-                                                <div className="flex gap-2">
-                                                    <Input
-                                                        placeholder="Escribe un comentario..."
-                                                        value={capituloSeleccionado === capitulo.id ? nuevoComentario : ""}
-                                                        onChange={(e) => {
-                                                            setCapituloSeleccionado(capitulo.id)
-                                                            setNuevoComentario(e.target.value)
-                                                        }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter" && !e.shiftKey) {
-                                                                e.preventDefault()
-                                                                handleEnviarComentario(capitulo.id)
-                                                            }
-                                                        }}
-                                                    />
                                                     <Button
-                                                        size="icon"
-                                                        disabled={!nuevoComentario.trim() || capituloSeleccionado !== capitulo.id}
-                                                        onClick={() => handleEnviarComentario(capitulo.id)}
+                                                        size="sm"
+                                                        onClick={() => handleAprobarCapitulo(capitulo.id)}
                                                     >
-                                                        <MessageSquare className="w-4 h-4" />
+                                                        Aprobar
                                                     </Button>
+                                                )}
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between text-sm text-muted-foreground">
+                                                    <span>Progreso: {capitulo.porcentajeCompletado}%</span>
+                                                    <span>Última mod: {format(new Date(capitulo.updatedAt), "dd/MM/yyyy")}</span>
+                                                </div>
+
+                                                {/* Sección de Comentarios */}
+                                                <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+                                                    <h4 className="font-medium text-sm flex items-center gap-2">
+                                                        <MessageSquare className="w-4 h-4" /> Comentarios
+                                                    </h4>
+                                                    {capitulo.comentarios.length > 0 ? (
+                                                        <div className="space-y-3">
+                                                            {capitulo.comentarios.map((comentario: any) => (
+                                                                <div key={comentario.id} className="bg-background p-3 rounded shadow-sm text-sm">
+                                                                    <div className="flex justify-between mb-1">
+                                                                        <span className="font-semibold">{comentario.autor.nombre}</span>
+                                                                        <span className="text-xs text-muted-foreground">
+                                                                            {format(new Date(comentario.createdAt), "dd/MM HH:mm")}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p>{comentario.contenido}</p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-muted-foreground italic">No hay comentarios aún.</p>
+                                                    )}
+
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            placeholder="Escribe un comentario..."
+                                                            value={capituloSeleccionado === capitulo.id ? nuevoComentario : ""}
+                                                            onChange={(e) => {
+                                                                setCapituloSeleccionado(capitulo.id)
+                                                                setNuevoComentario(e.target.value)
+                                                            }}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter" && !e.shiftKey) {
+                                                                    e.preventDefault()
+                                                                    handleEnviarComentario(capitulo.id)
+                                                                }
+                                                            }}
+                                                        />
+                                                        <Button
+                                                            size="icon"
+                                                            disabled={!nuevoComentario.trim() || capituloSeleccionado !== capitulo.id}
+                                                            onClick={() => handleEnviarComentario(capitulo.id)}
+                                                        >
+                                                            <MessageSquare className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                                        </CardContent>
+                                    </Card>
+                                )))}
                         </TabsContent>
 
                         <TabsContent value="hitos" className="space-y-4 mt-0">
@@ -422,6 +440,13 @@ export function TesisDetalle({ tesisId, open, onOpenChange }: TesisDetalleProps)
                         </TabsContent>
                     </ScrollArea>
                 </Tabs>
+
+                <GestionarCapitulosDialog
+                    tesisId={tesis.id}
+                    capitulos={tesis.capitulos}
+                    open={gestionCapitulosOpen}
+                    onOpenChange={setGestionCapitulosOpen}
+                />
             </DialogContent>
         </Dialog>
     )

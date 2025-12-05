@@ -59,9 +59,11 @@ export function TesistaCard({ tesista, onVerDetalles }: TesistaCardProps) {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Badge variant={alertVariant} className="gap-1">
-                                    <span>{alertEmoji}</span>
-                                </Badge>
+                                <span className="cursor-help">
+                                    <Badge variant={alertVariant} className="gap-1">
+                                        <span>{alertEmoji}</span>
+                                    </Badge>
+                                </span>
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p>{alertText}</p>

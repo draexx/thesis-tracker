@@ -174,7 +174,15 @@ export default function RegisterPage() {
                 <CardContent>
                     <Stepper steps={steps} currentStep={currentStep} />
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-8">
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="space-y-6 mt-8"
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                            }
+                        }}
+                    >
                         {/* Step 1: Basic Information */}
                         {currentStep === 1 && (
                             <div className="space-y-4">
