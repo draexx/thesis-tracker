@@ -86,6 +86,7 @@ export async function POST(req: Request) {
             { status: 201 }
         )
     } catch (error) {
+        console.error("Error en registro:", error)
         if (error instanceof z.ZodError) {
             return NextResponse.json(
                 { error: "Datos inválidos", details: error.issues },
@@ -93,9 +94,10 @@ export async function POST(req: Request) {
             )
         }
 
-        console.error("Error en registro:", error)
+        // Devolver mensaje de error específico para debug
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido"
         return NextResponse.json(
-            { error: "Error al registrar usuario" },
+            { error: `Error interno: ${errorMessage}` },
             { status: 500 }
         )
     }
