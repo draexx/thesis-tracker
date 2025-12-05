@@ -21,6 +21,8 @@ const DEFAULT_CHAPTERS = [
     { numero: 5, titulo: "Conclusiones" },
 ]
 
+export const dynamic = "force-dynamic"
+
 export default function OnboardingPage() {
     const [currentStep, setCurrentStep] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
@@ -30,7 +32,8 @@ export default function OnboardingPage() {
     const [useCustomChapters, setUseCustomChapters] = useState(false)
     const router = useRouter()
     const { toast } = useToast()
-    const { data: session } = useSession()
+    const session = useSession()
+    const user = session?.data?.user
 
     const steps = ["Información de Tesis", "Estructura de Capítulos"]
 
@@ -73,7 +76,7 @@ export default function OnboardingPage() {
 
         try {
             // Find advisor if name provided
-            let asesorId = session?.user?.id
+            let asesorId = user?.id
 
             if (nombreAsesor.trim()) {
                 const asesorResponse = await fetch(`/api/users/search?nombre=${encodeURIComponent(nombreAsesor)}&rol=ASESOR`)

@@ -19,7 +19,7 @@ export const registroSchema = z.object({
     // Paso 3 - Campos opcionales (Estudiante)
     tituloTesis: z.string().optional(),
     nombreAsesor: z.string().optional(),
-    visibilidadPublica: z.boolean().default(true),
+    visibilidadPublica: z.boolean().optional(),
 
     // Paso 3 - Campos opcionales (Asesor)
     institucion: z.string().optional(),
