@@ -15,7 +15,7 @@ export default async function EstudianteDashboard() {
     }
 
     if (session.user.rol !== "ESTUDIANTE") {
-        redirect("/dashboard/asesor")
+        redirect("/asesor")
     }
 
     // Fetch thesis with all related data

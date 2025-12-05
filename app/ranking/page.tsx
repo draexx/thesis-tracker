@@ -182,7 +182,7 @@ export default function RankingPublico() {
                             asChild
                             className="mb-4"
                         >
-                            <Link href={userRole === "ESTUDIANTE" ? "/dashboard/estudiante" : "/dashboard/asesor"}>
+                            <Link href={userRole === "ESTUDIANTE" ? "/estudiante" : "/asesor"}>
                                 <ArrowLeft className="mr-2 h-4 w-4" />
                                 Volver al Dashboard
                             </Link>

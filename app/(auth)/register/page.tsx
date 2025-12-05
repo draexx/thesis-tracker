@@ -138,12 +138,12 @@ export default function RegisterPage() {
             // Redirect based on role and thesis status
             if (data.rol === "ESTUDIANTE") {
                 if (result.hasThesis) {
-                    router.push("/dashboard/estudiante")
+                    router.push("/estudiante")
                 } else {
-                    router.push("/dashboard/estudiante/onboarding")
+                    router.push("/estudiante/onboarding")
                 }
             } else {
-                router.push("/dashboard/asesor")
+                router.push("/asesor")
             }
         } catch (error) {
             toast({

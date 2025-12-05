@@ -35,7 +35,7 @@ export default function OnboardingPage() {
     const steps = ["Información de Tesis", "Estructura de Capítulos"]
 
     const handleSkip = () => {
-        router.push("/dashboard/estudiante")
+        router.push("/estudiante")
     }
 
     const handleChapterChange = (index: number, field: "titulo", value: string) => {
@@ -105,7 +105,7 @@ export default function OnboardingPage() {
                 description: "Tu tesis ha sido configurada exitosamente",
             })
 
-            router.push("/dashboard/estudiante")
+            router.push("/estudiante")
         } catch (error) {
             toast({
                 title: "Error",
