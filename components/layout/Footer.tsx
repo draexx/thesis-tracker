@@ -40,13 +40,13 @@ export const Footer = () => {
                         © {new Date().getFullYear()} Thesis Track & Compare. Todos los derechos reservados.
                     </p>
                     <div className="flex gap-4">
-                        <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                        <Link href="https://x.com/Draexx" className="text-muted-foreground hover:text-foreground transition-colors">
                             <Twitter className="h-5 w-5" />
                         </Link>
-                        <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                        <Link href="https://github.com/draexx" className="text-muted-foreground hover:text-foreground transition-colors">
                             <Github className="h-5 w-5" />
                         </Link>
-                        <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                        <Link href="https://www.linkedin.com/in/pedrocarranza" className="text-muted-foreground hover:text-foreground transition-colors">
                             <Linkedin className="h-5 w-5" />
                         </Link>
                     </div>

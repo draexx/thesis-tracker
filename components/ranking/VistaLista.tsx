@@ -136,11 +136,11 @@ export function VistaLista({ entries, currentUserId, modoGamificacion = false }:
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 max-w-md">
                                             <TooltipProvider>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <div className="text-sm text-gray-900 dark:text-gray-100 truncate max-w-xs cursor-help">
+                                                        <div className="text-sm text-gray-900 dark:text-gray-100 truncate cursor-help">
                                                             {entry.titulo}
                                                         </div>
                                                     </TooltipTrigger>
@@ -157,8 +157,21 @@ export function VistaLista({ entries, currentUserId, modoGamificacion = false }:
                                                 className="w-48"
                                             />
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <Badge variant="secondary">{entry.programa}</Badge>
+                                        <td className="px-6 py-4">
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="max-w-[200px]">
+                                                            <Badge variant="secondary" className="truncate block">
+                                                                {entry.programa}
+                                                            </Badge>
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>{entry.programa}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                         </td>
                                     </motion.tr>
                                 )

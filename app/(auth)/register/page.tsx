@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
+import { ArrowLeft, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,6 +37,8 @@ export default function RegisterPage() {
     const [currentStep, setCurrentStep] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
     const [customPrograma, setCustomPrograma] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const router = useRouter()
     const { toast } = useToast()
 
@@ -202,13 +204,26 @@ export default function RegisterPage() {
 
                                 <div>
                                     <Label htmlFor="password">Contraseña</Label>
-                                    <Input
-                                        id="password"
-                                        type="password"
-                                        placeholder="Mínimo 8 caracteres"
-                                        {...register("password")}
-                                        className={errors.password ? "border-red-500" : ""}
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            id="password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Mínimo 8 caracteres"
+                                            {...register("password")}
+                                            className={errors.password ? "border-red-500" : ""}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                     {errors.password && (
                                         <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
                                     )}
@@ -219,13 +234,26 @@ export default function RegisterPage() {
 
                                 <div>
                                     <Label htmlFor="confirmarPassword">Confirmar Contraseña</Label>
-                                    <Input
-                                        id="confirmarPassword"
-                                        type="password"
-                                        placeholder="Repite tu contraseña"
-                                        {...register("confirmarPassword")}
-                                        className={errors.confirmarPassword ? "border-red-500" : ""}
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            id="confirmarPassword"
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            placeholder="Repite tu contraseña"
+                                            {...register("confirmarPassword")}
+                                            className={errors.confirmarPassword ? "border-red-500" : ""}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                        >
+                                            {showConfirmPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                     {errors.confirmarPassword && (
                                         <p className="text-sm text-red-500 mt-1">{errors.confirmarPassword.message}</p>
                                     )}
